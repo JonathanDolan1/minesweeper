@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body onload="onInit()">
     <h1>Minesweeper</h1>
     <div class="top-display-container">
-        <span class="lives">Lives:<span> ♥️ ♥️ ♥️ </span></span>
+        <span class="hints-container">
+
+        </span>
+        <span class="lives-container">
+
+        </span>
+
         <br>
+        
         <button class="smiley" onclick="onInit()"> 😀 </button>
+
         <br>
-        <button onclick="onLevelClicked(0)">Beginner</button>
-        <button onclick="onLevelClicked(1)">Medium</button>
-        <button onclick="onLevelClicked(2)">Expert</button>
+
+        <div class="levels-container">
+            <button onclick="onLevelClicked(0)">Beginner</button>
+            <button onclick="onLevelClicked(1)">Medium</button>
+            <button onclick="onLevelClicked(2)">Expert</button>
+        </div>
+
     </div>
 
     <div class="board-container">
-
 
     </div>
 
@@ -28,4 +41,5 @@
     <script src="js/utils.js"></script>
     <script src="js/minesweeper.js"></script>
 </body>
+
 </html>

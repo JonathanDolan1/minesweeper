@@ -6,7 +6,7 @@ const FLAG = '⛳️'
 const LIFE = '♥️'
 
 var gBoard
-var gLevels = [{size: 4, minesNum: 2},{size: 8, minesNum: 14},{size: 12, minesNum: 32}]
+var gLevels = [{ size: 4, minesNum: 2 }, { size: 8, minesNum: 14 }, { size: 12, minesNum: 32 }]
 var gCurrLevel = gLevels[0]
 
 var gGame = {
@@ -14,13 +14,33 @@ var gGame = {
     shownCount: 0,
     markedCount: 0,
     secsPassed: 0,
-    livesCount: 3
+    livesCount: 3,
 }
 
+var gIsHintMarked = false
 
 function onInit() {
     buildBoard()
     renderBoard()
+    gGame.isOn = false
+    gGame.shownCount = 0
+    gGame.markedCount = 0
+    gGame.secsPassed = 0
+    gGame.livesCount = 3
+    gIsHintMarked = false
+    renderDisplay()
+}
+
+function renderDisplay(){
+    clearHintsMarks()
+    const elSmileyButton = document.querySelector('button')
+    elSmileyButton.innerText = '😀'
+    const elHintsContainer = document.querySelector('.hints-container')
+    elHintsContainer.innerHTML = `Hints:<span class="hint hint1" onclick="onHintClicked(this)"> 💡 </span>
+    <span class="hint hint2" onclick="onHintClicked(this)"> 💡 </span>
+    <span class="hint hint3" onclick="onHintClicked(this)"> 💡 </span>`
+    const elLivesContainer = document.querySelector('.lives-container')
+    elLivesContainer.innerHTML = `Lives:<span> ♥️ ♥️ ♥️ </span>`
 }
 
 function buildBoard() {
@@ -37,7 +57,6 @@ function buildBoard() {
             gBoard[i][j] = cell
         }
     }
-    printBoard();
 }
 
 function setMinesAtRandPossEx(rowIdx, colIdx) {
@@ -62,12 +81,64 @@ function renderBoard() {
     elBoardContainer.innerHTML = strHTML
 }
 
-function onLevelClicked(lvlIdx){
+function onHintClicked(elHint) {
+    if (!gGame.isOn) return
+    if (elHint.classList.contains('marked')) {
+        elHint.classList.remove('marked')
+        gIsHintMarked = false
+    } else {
+        clearHintsMarks()
+        elHint.classList.add('marked')
+        gIsHintMarked = true
+    }
+}
+
+function clearHintsMarks() {
+    const elHints = document.querySelectorAll('.hint')
+    for (var i = 0; i < elHints.length; i++) {
+        elHints[i].classList.remove('marked')
+    }
+}
+
+function handleHint(rowIdx, colIdx) {
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i<0 || i>gBoard.length-1) continue
+            for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+    if (j<0 || j>gBoard[i].length-1) continue
+            const currCell = gBoard[i][j]
+            if (!currCell.isShown) {
+                const elCell = getElCellFromPos(i, j)
+                if (currCell.isMine) {
+                    elCell.innerText = MINE
+                } else if (currCell.mineNegsCount > 0) {
+                    elCell.innerText = currCell.mineNegsCount
+                }
+                elCell.classList.add('hinted')
+                setTimeout(() => {
+                    elCell.innerText = EMPTY;
+                    elCell.classList.remove('hinted')
+                }, 1000)
+            }
+        }
+    }
+    const elHints = document.querySelectorAll('.hint')
+    for (var i = 0; i < elHints.length; i++) {
+        const elHint = elHints[i]
+        if (elHint.classList.contains('marked')) elHint.style.display = 'none'
+    }
+    gIsHintMarked = false
+}
+
+function onLevelClicked(lvlIdx) {
     gCurrLevel = gLevels[lvlIdx]
     onInit()
 }
 
 function onCellClicked(elCell, i, j) {
+    if (gIsHintMarked) {
+        handleHint(i, j)
+        return
+    }
     if (!gGame.isOn) {
         // gBoard[0][0].isMine = true
         // gBoard[0][1].isMine = true
@@ -77,9 +148,7 @@ function onCellClicked(elCell, i, j) {
         printBoard()
     }
     const currCell = gBoard[i][j]
-    // debugger
     if (currCell.isShown) return
-    console.log('i', i, 'j', j);
     showCell(currCell, elCell)
     if (!currCell.isMine) {
         if (currCell.mineNegsCount > 0) {
@@ -89,6 +158,7 @@ function onCellClicked(elCell, i, j) {
         }
     } else {
         elCell.innerText = MINE
+        elCell.classList.add('mine')
         loseLife()
     }
     checkGameOver(!currCell.isMine)
@@ -96,12 +166,11 @@ function onCellClicked(elCell, i, j) {
 
 function loseLife() {
     gGame.livesCount--
-    console.log('gGame.livesCount:', gGame.livesCount);
     var livesStr = ' '
     for (var i = 0; i < gGame.livesCount; i++) {
         livesStr += LIFE + ' '
     }
-    const elLivesSpan = document.querySelector('.lives span')
+    const elLivesSpan = document.querySelector('.lives-container span')
     elLivesSpan.innerText = livesStr.trimEnd()
 }
 
@@ -109,7 +178,6 @@ function showCell(cell, elCell) {
     cell.isShown = true
     gGame.shownCount++
     elCell.classList.add('shown')
-    console.log('gGame.shownCount', gGame.shownCount);
 }
 
 function expandShown(rowIdx, colIdx) {
@@ -119,10 +187,10 @@ function expandShown(rowIdx, colIdx) {
             if (j < 0 || j > gBoard[i].length - 1) continue
             if (i === rowIdx && j === colIdx) continue
             const currCell = gBoard[i][j]
-            if (currCell.isMine) continue
+            if (currCell.isMine || currCell.isShown) continue
             const elCell = getElCellFromPos(i, j)
             if (currCell.mineNegsCount > 0) {
-                if (!currCell.isShown) showCell(currCell,elCell)
+                showCell(currCell, elCell)
                 elCell.innerText = currCell.mineNegsCount
             } else {
                 onCellClicked(elCell, i, j)
@@ -154,17 +222,18 @@ function onCellMarked(elCell, i, j) {
 function checkGameOver(isWin) {
     if (!isWin) {
         if (gGame.livesCount === 0) {
-            const elButton = document.querySelector('button')
-            elButton.innerText = '🤯'
+            const elSmileyButton = document.querySelector('button')
+            elSmileyButton.innerText = '🤯'
             console.log('You lose :(');
+            gGame.isOn = false
         }
     } else if (gGame.shownCount + gGame.markedCount === gCurrLevel.size ** 2) {
-        const elButton = document.querySelector('button')
-            elButton.innerText = '😎'
+        const elSmileyButton = document.querySelector('.smiley')
+        elSmileyButton.innerText = '😎'
         console.log('You win :)');
-    } else return
-    // render modal
-    gGame.isOn = false
+        gGame.isOn = false
+    }
+    // RENDER MODAL
 }
 
 function setMineNegsCount() {
