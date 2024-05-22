@@ -31,9 +31,9 @@ function onInit() {
     renderDisplay()
 }
 
-function renderDisplay(){
+function renderDisplay() {
     clearHintsMarks()
-    const elSmileyButton = document.querySelector('button')
+    const elSmileyButton = document.querySelector('.smiley')
     elSmileyButton.innerText = '😀'
     const elHintsContainer = document.querySelector('.hints-container')
     elHintsContainer.innerHTML = `Hints:<span class="hint hint1" onclick="onHintClicked(this)"> 💡 </span>
@@ -100,11 +100,22 @@ function clearHintsMarks() {
     }
 }
 
+function onSafeClicked() {
+    while (true) {
+        var randEmptyPos = getRandEmptyPosEx()
+        if (!randEmptyPos) return
+        if (!gBoard[randEmptyPos.i][randEmptyPos.j].isShown && !gBoard[randEmptyPos.i][randEmptyPos.j].isMarked) break
+    }
+    const elCell = getElCellFromPos(randEmptyPos.i, randEmptyPos.j)
+    elCell.classList.add('safe')
+    setTimeout(() => elCell.classList.remove('safe'), 4000);
+}
+
 function handleHint(rowIdx, colIdx) {
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-        if (i<0 || i>gBoard.length-1) continue
-            for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-    if (j<0 || j>gBoard[i].length-1) continue
+        if (i < 0 || i > gBoard.length - 1) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j > gBoard[i].length - 1) continue
             const currCell = gBoard[i][j]
             if (!currCell.isShown) {
                 const elCell = getElCellFromPos(i, j)
@@ -115,7 +126,7 @@ function handleHint(rowIdx, colIdx) {
                 }
                 elCell.classList.add('hinted')
                 setTimeout(() => {
-                    elCell.innerText = EMPTY;
+                    elCell.innerText = (currCell.isMarked) ? FLAG : EMPTY;
                     elCell.classList.remove('hinted')
                 }, 1000)
             }
@@ -205,6 +216,7 @@ function getElCellFromPos(i, j) {
 }
 
 function onCellMarked(elCell, i, j) {
+    if (!gGame.isOn) return
     const currCell = gBoard[i][j]
     if (currCell.isShown) return
     if (!currCell.isMarked) {
@@ -222,12 +234,12 @@ function onCellMarked(elCell, i, j) {
 function checkGameOver(isWin) {
     if (!isWin) {
         if (gGame.livesCount === 0) {
-            const elSmileyButton = document.querySelector('button')
+            const elSmileyButton = document.querySelector('.smiley')
             elSmileyButton.innerText = '🤯'
             console.log('You lose :(');
             gGame.isOn = false
         }
-    } else if (gGame.shownCount + gGame.markedCount === gCurrLevel.size ** 2) {
+    } else if (gGame.markedCount === gCurrLevel.minesNum && gGame.shownCount === gCurrLevel.size ** 2 - gCurrLevel.minesNum) {
         const elSmileyButton = document.querySelector('.smiley')
         elSmileyButton.innerText = '😎'
         console.log('You win :)');
@@ -259,7 +271,7 @@ function countMineNegs(rowIdx, colIdx) {
     return mineNegsCount
 }
 
-function getRandEmptyPosEx(rowIdx, colIdx) {
+function getRandEmptyPosEx(rowIdx = null, colIdx = null) {
     const emptyPoss = []
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {

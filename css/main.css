@@ -92,6 +92,13 @@ td.mine{
     background-color: rgb(255, 47, 47);
 }
 
+td.safe{
+    transition: 1s;
+    background-color: greenyellow;
+    border-style: solid;
+    border-color: darkgreen;
+}
+
 h2 {
     color: whitesmoke;
     margin-top: 40px;
