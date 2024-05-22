@@ -8,11 +8,22 @@
 </head>
 <body onload="onInit()">
     <h1>Minesweeper</h1>
+    <div class="top-display-container">
+        <span class="lives">Lives:<span> ♥️ ♥️ ♥️ </span></span>
+        <br>
+        <button class="smiley" onclick="onInit()"> 😀 </button>
+        <br>
+        <button onclick="onLevelClicked(0)">Beginner</button>
+        <button onclick="onLevelClicked(1)">Medium</button>
+        <button onclick="onLevelClicked(2)">Expert</button>
+    </div>
+
     <div class="board-container">
 
 
     </div>
 
+    <h2>Jonathan Dolan</h2>
 
     <script src="js/utils.js"></script>
     <script src="js/minesweeper.js"></script>
