@@ -47,10 +47,13 @@
             <button class="manual-mode" onclick="onManualModeClicked()">Manual mode ✍️: <span>off</span></button>
             <br>
         </div>
-        <div class="undo-and-timer-container">
+        <div class="undo-timer-and-mines-count-container">
             <button class="undo" onclick="onUndoClicked()">Undo ↩️</button>
-
+            
             <div class="timer">Time: <span></span> </div>
+            <div class="mines-count">
+                💣:<span></span>
+            </div>
         </div>
         <button class="smiley" onclick="onInit()"> 😀 </button>
     </div>
@@ -71,14 +74,12 @@
                 <th>Extreme</th>
             </tr>
             <tr>
-                <td class="easy">00:00</td>
-                <td class="medium">00:00</td>
-                <td class="extreme">00:00</td>
+                <td class="easy">None</td>
+                <td class="medium">None</td>
+                <td class="extreme">None</td>
             </tr>
         </table>
     </div>
-
-    <!-- <h2>Jonathan Dolan</h2> -->
 
     <footer>Made by Jonathan Dolan</footer>
 
