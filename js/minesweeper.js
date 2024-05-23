@@ -8,6 +8,12 @@ const LIFE = '♥️'
 var gBoards
 var gGames
 
+// TODOS:
+// MANUAL MODE MINES COUNT FEATURE
+// MINES COUNT FEATURE IN GENERAL
+// PENDING MODAL FEATURE
+// GAME OVER MODAL
+
 var gBoard
 var gLevels = [
     { size: 4, minesCount: 2 },
@@ -34,7 +40,8 @@ var gGame = {
     megaHintsCount: 1,
     isMegaHintModeOn: false,
     megaHintsClicksCount: 2,
-    megaHintMarkedPoss: []
+    megaHintMarkedPoss: [],
+    isDarkModeOn: false
 }
 
 function onInit() {
@@ -110,7 +117,8 @@ function setMinesAtRandPossEx(rowIdx, colIdx) {
 }
 
 function renderBoard() {
-    var strHTML = '<table class="board">'
+    const darkModeClassStr = (gGame.isDarkModeOn) ? ' dark-mode' : ''
+    var strHTML = `<table class="board${darkModeClassStr}">`
     for (var i = 0; i < gBoard.length; i++) {
         strHTML += '<tr>'
         for (var j = 0; j < gBoard[i].length; j++) {
@@ -129,13 +137,24 @@ function renderBoard() {
                 classStr = 'marked'
                 innerText = FLAG
             }
-            strHTML += `<td id="cell-${i}-${j}" class="${classStr}" onclick="onCellClicked(this,${i},${j})" oncontextmenu="onCellMarked(this,${i},${j});return false;">${innerText}</td>`
+            strHTML += `<td id="cell-${i}-${j}" class="${classStr+darkModeClassStr}" onclick="onCellClicked(this,${i},${j})" oncontextmenu="onCellMarked(this,${i},${j});return false;">${innerText}</td>`
         }
         strHTML += '</tr>'
     }
     strHTML += '</table>'
     var elBoardContainer = document.querySelector('.board-container')
     elBoardContainer.innerHTML = strHTML
+}
+
+function onDarkModeClicked(){
+    const elElements = document.getElementsByTagName('*')
+    for (var i = 0 ; i <elElements.length; i++){
+        const elElement = elElements[i]
+        elElement.classList.toggle('dark-mode')
+    }
+    gGame.isDarkModeOn = !gGame.isDarkModeOn
+    const elDarkModeButton = document.querySelector('.dark-mode-button')
+    elDarkModeButton.innerText = gGame.isDarkModeOn ? 'Light mode 🌞' : 'Dark mode 🌚'
 }
 
 function onUndoClicked() {
