@@ -165,25 +165,46 @@ function clearHintsMarks() {
 }
 
 function renderMegaHintModeDisplay(isOn) {
-    const elMegaHintButtonSpan = document.querySelector('button.mega-hint span')
+    const elMegaHintButton = document.querySelector('button.mega-hint')
+    const elMegaHintButtonSpan = elMegaHintButton.querySelector('span')
     elMegaHintButtonSpan.innerText = isOn ? 'on' : 'off'
+    if (isOn) {
+        elMegaHintButton.classList.add('on')
+    } else {
+        elMegaHintButton.classList.remove('on')
+    }
+    const ellCells = document.querySelectorAll('.board td')
+    for (var i = 0 ; i < ellCells.length ; i++){
+        const elCell = ellCells[i]
+        if (isOn){
+        elCell.style.cursor = 'pointer'
+        } else if (!elCell.classList.contains('shown')){
+            elCell.style.cursor = 'pointer'
+        }   else {
+            elCell.style.cursor = 'revert'
+        }
+    }
 }
 
 function onManualModeClicked() {
-    if (!gGame.isOn && gGame.isManualModeOn) {
-        gGame.isManualModeOn = false
-        renderManualModeDisplay(false)
+    if (gGame.isManualModeOn) {
+        onInit()
         return
     }
     onInit()
     gGame.isManualModeOn = true
     renderManualModeDisplay(true)
-    console.log(gGame.isManualModeOn);
 }
 
 function renderManualModeDisplay(isOn) {
-    const elManualButtonSpan = document.querySelector('.manual-mode span')
+    const elManualButton = document.querySelector('.manual-mode')
+    const elManualButtonSpan = elManualButton.querySelector('span')
     elManualButtonSpan.innerText = isOn ? 'on' : 'off'
+    if (isOn) {
+        elManualButton.classList.add('on')
+    } else {
+        elManualButton.classList.remove('on')
+    }
 }
 
 function onSafeClicked() {
@@ -227,7 +248,7 @@ function handleHint(rowIdx, colIdx) {
         for (var j = colIdx - 1; j <= colIdx + 1; j++) {
             if (j < 0 || j > gBoard[i].length - 1) continue
             const currCell = gBoard[i][j]
-            hintCell(currCell,i,j)
+            hintCell(currCell, i, j)
         }
     }
     const elHints = document.querySelectorAll('.hint')
@@ -262,12 +283,16 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
         printBoard()
         // FOR DEVELOPMENT
     }
+    if (gGame.isManualModeOn){
+        gGame.isManualModeOn = false
+        renderManualModeDisplay(false)
+    }
     if (gGame.shownCount === 0) {
         setMineNegsCount()
         startTimer()
     }
     if (gGame.isMegaHintModeOn) {
-        handleMegaHintClick(elCell,i,j)
+        handleMegaHintClick(elCell, i, j)
         return
     }
     if (!isRecoursive) {
@@ -300,7 +325,7 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
 
 function onMegaHintClicked() {
     if (!gGame.isOn || gGame.megaHintsCount === 0) return
-    if (!gGame.isMegaHintModeOn){
+    if (!gGame.isMegaHintModeOn) {
         gGame.isMegaHintModeOn = true
         renderMegaHintModeDisplay(true)
         return
@@ -309,11 +334,11 @@ function onMegaHintClicked() {
     renderMegaHintModeDisplay(false)
 }
 
-function handleMegaHintClick(ellCell,rowIdx,colIdx){
-    gGame.megaHintMarkedPoss.push({i:rowIdx,j:colIdx})
+function handleMegaHintClick(ellCell, rowIdx, colIdx) {
+    gGame.megaHintMarkedPoss.push({ i: rowIdx, j: colIdx })
     gGame.megaHintsClicksCount--
     ellCell.classList.add('hinted')
-    if (gGame.megaHintsClicksCount>0) return
+    if (gGame.megaHintsClicksCount > 0) return
     showMegaHint()
     gGame.megaHintsCount--
     resetMegaHint()
@@ -321,47 +346,51 @@ function handleMegaHintClick(ellCell,rowIdx,colIdx){
     renderMegaHintsClicksCount()
 }
 
-function renderMegaHintsClicksCount(){
+function renderMegaHintsClicksCount() {
     const elMegaHintSpanSpan = document.querySelector('span.mega-hint span')
     elMegaHintSpanSpan.innerText = gGame.megaHintsCount
 }
 
-function resetMegaHint(){
+function resetMegaHint() {
     gGame.isMegaHintModeOn = false
     gGame.megaHintsClicksCount = 2
-    gGame.megaHintMarkedPoss= []
+    gGame.megaHintMarkedPoss = []
 }
 
-function showMegaHint(){
+function showMegaHint() {
     const pos1 = gGame.megaHintMarkedPoss[0]
     const pos2 = gGame.megaHintMarkedPoss[1]
     var biggerRowIdx
     var smallerRowIdx
     var biggerColIdx
     var smallerColIdx
-    if (pos1.i>pos2.i) {
+    if (pos1.i > pos2.i) {
         biggerRowIdx = pos1.i
         smallerRowIdx = pos2.i
     } else {
         biggerRowIdx = pos2.i
         smallerRowIdx = pos1.i
     }
-    if (pos1.j>pos2.j) {
+    if (pos1.j > pos2.j) {
         biggerColIdx = pos1.j
         smallerColIdx = pos2.j
     } else {
         biggerColIdx = pos2.j
         smallerColIdx = pos1.j
     }
-    for (var i = smallerRowIdx ; i<=biggerRowIdx ; i++){
-        for (var j = smallerColIdx ; j<=biggerColIdx ; j++){
+    for (var i = smallerRowIdx; i <= biggerRowIdx; i++) {
+        for (var j = smallerColIdx; j <= biggerColIdx; j++) {
             const currCell = gBoard[i][j]
-         hintCell(currCell,i,j,2000)
+            if (currCell.isShown){
+                const ellCell = getElCellFromPos(i,j)
+                ellCell.classList.remove('hinted')
+            }
+            hintCell(currCell, i, j, 2000)
         }
     }
 }
 
-function hintCell(cell,i , j, revealTime=1000){
+function hintCell(cell, i, j, revealTime = 1000) {
     if (!cell.isShown) {
         const elCell = getElCellFromPos(i, j)
         if (cell.isMine) {
@@ -374,7 +403,7 @@ function hintCell(cell,i , j, revealTime=1000){
             elCell.innerText = (cell.isMarked) ? FLAG : EMPTY;
             elCell.classList.remove('hinted')
         }, revealTime)
-    }   
+    }
 }
 
 function placeMine(ellCell, i, j) {
@@ -464,7 +493,6 @@ function checkGameOver() {
 function winGame() {
     const elSmileyButton = document.querySelector('.smiley')
     elSmileyButton.innerText = '😎'
-    console.log('You win :)');
     stopGame()
     var level
     switch (gGame.currLevel.size) {
@@ -487,7 +515,6 @@ function winGame() {
 function loseGame() {
     const elSmileyButton = document.querySelector('.smiley')
     elSmileyButton.innerText = '🤯'
-    console.log('You lose :(');
     stopGame()
 }
 
