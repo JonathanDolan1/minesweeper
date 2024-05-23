@@ -298,7 +298,6 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
         }
         gGame.isOn = true
         setMinesAtRandPossEx(i, j)
-        printBoard()
     }
     if (gGame.isManualModeOn) {
         gGame.isManualModeOn = false
