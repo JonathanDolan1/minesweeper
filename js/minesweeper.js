@@ -14,17 +14,16 @@ var gLevels = [
     { size: 8, minesCount: 14 },
     { size: 12, minesCount: 32 }
 ]
-// var gLevels = createLevels()
 
 var gGame = {
     isOn: false,
+    isGameOver: false,
     currLevel: gLevels[0],
     shownCount: 0,
     markedCount: 0,
     revealedMinesCount: 0,
     livesCount: 0,
     safeClicksCount: 3,
-    // gGame.secsPassed = 0
     startTime: null,
     time: 0,
     timerIntervalId: null,
@@ -38,20 +37,13 @@ var gGame = {
     megaHintMarkedPoss: []
 }
 
-function copyGame(game) {
-    const gameCopy = {}
-    for (var key in game) {
-        gameCopy[key] = game[key]
-    }
-    return gameCopy
-}
-
 function onInit() {
     buildBoard()
     renderBoard()
     gBoards = []
     gGames = []
     gGame.isOn = false
+    gGame.isGameOver = false
     gGame.shownCount = 0
     gGame.markedCount = 0
     gGame.revealedMinesCount = 0
@@ -252,27 +244,24 @@ function onLevelClicked(lvlIdx) {
 }
 
 function onCellClicked(elCell, i, j, isRecoursive = false) {
-    if (gGame.isWaitingToStart) return
+    if (gGame.isWaitingToStart || gGame.isGameOver) return
     if (gGame.isHintMarked) {
         handleHint(i, j)
         return
     }
-    // console.log('gBoards')
-    // console.log(copyBoard(gBoard))
     if (!gGame.isOn) {
         if (gGame.isManualModeOn) {
             placeMine(elCell, i, j)
             return
         }
+        gGame.isOn = true
         setMinesAtRandPossEx(i, j)
+        // FOR DEVELOPMENT
         // gBoard[0][0].isMine = true
         // gBoard[0][1].isMine = true
-        gGame.isOn = true
-        //
         printBoard()
-        //
+        // FOR DEVELOPMENT
     }
-    // console.log(gBoards)
     if (gGame.shownCount === 0) {
         setMineNegsCount()
         startTimer()
@@ -318,9 +307,6 @@ function onMegaHintClicked() {
     }
     gGame.isMegaHintModeOn = false
     renderMegaHintModeDisplay(false)
-    // gGame.megaHintsClicksCount--
-    // const elMegaHintSpanSpan = document.querySelector('.mega-hint span')
-    // elMegaHintSpanSpan.innerText = gGame.megaHintsClicksCount
 }
 
 function handleMegaHintClick(ellCell,rowIdx,colIdx){
@@ -370,12 +356,12 @@ function showMegaHint(){
     for (var i = smallerRowIdx ; i<=biggerRowIdx ; i++){
         for (var j = smallerColIdx ; j<=biggerColIdx ; j++){
             const currCell = gBoard[i][j]
-         hintCell(currCell,i,j)
+         hintCell(currCell,i,j,2000)
         }
     }
 }
 
-function hintCell(cell,i , j){
+function hintCell(cell,i , j, revealTime=1000){
     if (!cell.isShown) {
         const elCell = getElCellFromPos(i, j)
         if (cell.isMine) {
@@ -387,7 +373,7 @@ function hintCell(cell,i , j){
         setTimeout(() => {
             elCell.innerText = (cell.isMarked) ? FLAG : EMPTY;
             elCell.classList.remove('hinted')
-        }, 1000)
+        }, revealTime)
     }   
 }
 
@@ -402,7 +388,7 @@ function placeMine(ellCell, i, j) {
             renderBoard();
             gGame.isWaitingToStart = false
         }, 3000)
-        // RENDER A 'PENDING...' MODAL
+        // TODO: RENDER A 'PENDING...' MODAL
         printBoard()
         gGame.isOn = true
     }
@@ -472,7 +458,7 @@ function checkGameOver() {
     } else if (gGame.markedCount + gGame.revealedMinesCount === gGame.currLevel.minesCount && gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount) {
         winGame()
     }
-    // RENDER MODAL
+    // TODO: RENDER GAME OVER MODAL
 }
 
 function winGame() {
@@ -495,7 +481,7 @@ function winGame() {
             level = null
             break
     }
-    if (gGame.time > localStorage.getItem(level)) localStorage.setItem(level, gGame.time)
+    if (gGame.time < localStorage.getItem(level)) localStorage.setItem(level, gGame.time)
 }
 
 function loseGame() {
@@ -507,6 +493,7 @@ function loseGame() {
 
 function stopGame() {
     gGame.isOn = false
+    gGame.isGameOver = true
     clearInterval(gGame.timerIntervalId)
 }
 
@@ -547,7 +534,6 @@ function getRandMinePos() {
     return randMinePos
 }
 
-
 function getRandEmptyPosEx(rowIdx = null, colIdx = null) {
     const emptyPoss = []
     for (var i = 0; i < gBoard.length; i++) {
@@ -560,6 +546,14 @@ function getRandEmptyPosEx(rowIdx = null, colIdx = null) {
     if (!emptyPoss.length) return null
     const randEmptyPos = emptyPoss.splice(getRandomInt(0, emptyPoss.length), 1)[0]
     return randEmptyPos
+}
+
+function copyGame(game) {
+    const gameCopy = {}
+    for (var key in game) {
+        gameCopy[key] = game[key]
+    }
+    return gameCopy
 }
 
 function copyBoard(board) {
@@ -578,18 +572,6 @@ function copyBoard(board) {
         }
     }
     return boardCopy
-}
-
-
-function printBoard() {
-    var displayBoard = []
-    for (var i = 0; i < gBoard.length; i++) {
-        displayBoard[i] = []
-        for (var j = 0; j < gBoard[i].length; j++) {
-            displayBoard[i][j] = (gBoard[i][j].isMine) ? MINE : EMPTY
-        }
-    }
-    console.table(displayBoard)
 }
 
 function startTimer() {
@@ -614,6 +596,9 @@ function getTimerStrFromTime(time) {
     return timer
 }
 
+// MAYBE I'LL THOSE FUNCTIONS LATER
+// RIGHT NOW IT'S BETTER TO SEE THE LEVELS DISPLAYED ON TOP
+
 function createLevels() {
     const levels = [
         createLevel(4, 2),
@@ -629,4 +614,17 @@ function createLevel(size, minesCount) {
         minesCount
     }
     return level
+}
+
+// FOR DEVELOPMENT
+
+function printBoard() {
+    var displayBoard = []
+    for (var i = 0; i < gBoard.length; i++) {
+        displayBoard[i] = []
+        for (var j = 0; j < gBoard[i].length; j++) {
+            displayBoard[i][j] = (gBoard[i][j].isMine) ? MINE : EMPTY
+        }
+    }
+    console.table(displayBoard)
 }

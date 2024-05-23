@@ -10,7 +10,7 @@
 
 <body onload="onInit()">
     <h1>Minesweeper</h1>
-    <button class="manual-mode" onclick="onManualModeClicked()">Manual mode <span>off</span></button>
+    <button class="manual-mode" onclick="onManualModeClicked()">Manual mode ✍️: <span>off</span></button>
     <div class="top-display-container">
         <span class="hints-container">
 
@@ -20,8 +20,13 @@
         </span>
 
         <br>
-
-        <button class="safe-click" onclick="onSafeClicked()">Safe Click</button>
+        <div class="mega-hint-container">
+        <button class="mega-hint" onclick="onMegaHintClicked()">Mega hint 💡: <span></span></button>
+        <br>
+        <span class="mega-hint"><span></span> click available</span>
+        </div>
+        <br>
+        <button class="safe-click" onclick="onSafeClicked()">Safe Click ✅ </button>
         <br>
         <span class="safe-click"><span></span> clicks available</span>
 
@@ -29,14 +34,11 @@
         <button class="mines-exterminator" onclick="onMinesExterminatorClicked()">Mines exterminator 🦾</button>
         <br>
         <br>
-        <button class="mega-hint" onclick="onMegaHintClicked()">Mega hint: <span></span></button>
-        <br>
-        <span class="mega-hint"><span></span> clicks available</span>
-        <br>
+        
         <button class="smiley" onclick="onInit()"> 😀 </button>
 
         <br>
-        <button class="undo" onclick="onUndoClicked()">Undo</button>
+        <button class="undo" onclick="onUndoClicked()">Undo ↩️</button>
         <br>
         <span class="timer">Time: <span></span> </span>
 
