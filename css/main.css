@@ -54,7 +54,7 @@ button:active {
     box-shadow: 0px 2px 33px 10px rgba(0, 0, 0, 0.73);
 }
 
-.dark-mode-button-container{
+.dark-mode-button-container {
     margin-block: 20px;
 }
 
@@ -263,7 +263,7 @@ td.safe {
     border-color: darkgreen;
 }
 
-td.safe.dark-mode{
+td.safe.dark-mode {
     background-color: rgb(21, 195, 21);
     border-color: greenyellow;
 }

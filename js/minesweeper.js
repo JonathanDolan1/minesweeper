@@ -137,7 +137,7 @@ function renderBoard() {
                 classStr = 'marked'
                 innerText = FLAG
             }
-            strHTML += `<td id="cell-${i}-${j}" class="${classStr+darkModeClassStr}" onclick="onCellClicked(this,${i},${j})" oncontextmenu="onCellMarked(this,${i},${j});return false;">${innerText}</td>`
+            strHTML += `<td id="cell-${i}-${j}" class="${classStr + darkModeClassStr}" onclick="onCellClicked(this,${i},${j})" oncontextmenu="onCellMarked(this,${i},${j});return false;">${innerText}</td>`
         }
         strHTML += '</tr>'
     }
@@ -146,9 +146,9 @@ function renderBoard() {
     elBoardContainer.innerHTML = strHTML
 }
 
-function onDarkModeClicked(){
+function onDarkModeClicked() {
     const elElements = document.getElementsByTagName('*')
-    for (var i = 0 ; i <elElements.length; i++){
+    for (var i = 0; i < elElements.length; i++) {
         const elElement = elElements[i]
         elElement.classList.toggle('dark-mode')
     }
@@ -193,13 +193,13 @@ function renderMegaHintModeDisplay(isOn) {
         elMegaHintButton.classList.remove('on')
     }
     const ellCells = document.querySelectorAll('.board td')
-    for (var i = 0 ; i < ellCells.length ; i++){
+    for (var i = 0; i < ellCells.length; i++) {
         const elCell = ellCells[i]
-        if (isOn){
-        elCell.style.cursor = 'pointer'
-        } else if (!elCell.classList.contains('shown')){
+        if (isOn) {
             elCell.style.cursor = 'pointer'
-        }   else {
+        } else if (!elCell.classList.contains('shown')) {
+            elCell.style.cursor = 'pointer'
+        } else {
             elCell.style.cursor = 'revert'
         }
     }
@@ -302,7 +302,7 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
         printBoard()
         // FOR DEVELOPMENT
     }
-    if (gGame.isManualModeOn){
+    if (gGame.isManualModeOn) {
         gGame.isManualModeOn = false
         renderManualModeDisplay(false)
     }
@@ -400,8 +400,8 @@ function showMegaHint() {
     for (var i = smallerRowIdx; i <= biggerRowIdx; i++) {
         for (var j = smallerColIdx; j <= biggerColIdx; j++) {
             const currCell = gBoard[i][j]
-            if (currCell.isShown){
-                const ellCell = getElCellFromPos(i,j)
+            if (currCell.isShown) {
+                const ellCell = getElCellFromPos(i, j)
                 ellCell.classList.remove('hinted')
             }
             hintCell(currCell, i, j, 2000)
