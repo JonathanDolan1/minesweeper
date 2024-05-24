@@ -123,7 +123,7 @@ function onMegaHintClicked() {
         renderMegaHintModeDisplay()
         return
     }
-    if (gGame.megaHintsClicksCount===1){
+    if (gGame.megaHintsClicksCount === 1) {
         resetMegaHint()
         clearHintedCell()
     }
@@ -197,22 +197,8 @@ function onSmileyClicked() {
 }
 
 function onUndoClicked() {
-    if (gGame.isManualModeOn && gGame.manuallySetMinesPoss.length > 0 &&
-        gGame.manuallySetMinesPoss.length !== gGame.currLevel.minesCount) {
-        OnUndoClickedManualModeOn()
-    }
-    if (gBoardsHistory.length <= 1) return
+    if (gBoardsHistory.length <= 1 || gGame.isManualModeOn) return
     gBoard = gBoardsHistory.pop()
     gGame = gGameDataHistory.pop()
     renderDisplay()
-}
-
-function OnUndoClickedManualModeOn() {
-    const pos = gGame.manuallySetMinesPoss.pop()
-    const cell = gBoard[pos.i][pos.j]
-    cell.isMine = false
-    const ellCell = getElCellFromPos(pos.i, pos.j)
-    ellCell.innerText = EMPTY
-    gGame.revealedMinesCount--
-    renderMinesCount()
 }

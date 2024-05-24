@@ -108,8 +108,10 @@ function renderManualModeDisplay() {
     const elManualButton = document.querySelector('.manual-mode')
     if (gGame.isManualModeOn) {
         elManualButton.classList.add('on')
+        renderSmiley(MANUAL_MODE_EMOJI)
     } else {
         elManualButton.classList.remove('on')
+        renderSmiley(SMILEY)
     }
 }
 
