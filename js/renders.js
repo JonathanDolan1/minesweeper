@@ -12,7 +12,7 @@ function renderBoard() {
             if (currCell.isShown) {
                 classStr = 'shown'
                 if (currCell.isMine) {
-                    classStr += 'mine'
+                    classStr += ' mine'
                     innerText = MINE
                 } else if (currCell.mineNegsCount > 0) {
                     innerText = currCell.mineNegsCount

@@ -210,7 +210,7 @@ function showMegaHint() {
 }
 
 function placeMine(ellCell, i, j) {
-    const cell = board[i][j]
+    const cell = gBoard[i][j]
     if (cell.isMine) {
         cell.isMine = false
         ellCell.innerText = EMPTY
