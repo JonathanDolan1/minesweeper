@@ -27,8 +27,8 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
         return
     }
     if (!isRecoursive) {
-        gBoards.push(copyBoard(gBoard))
-        gGames.push(copyGame(gGame))
+        gBoardsHistory.push(copyBoard(gBoard))
+        gGameDataHistory.push(copyGame(gGame))
     }
     const currCell = gBoard[i][j]
     if (currCell.isShown) return
@@ -59,8 +59,8 @@ function onCellMarked(elCell, i, j) {
     if (!gGame.isOn) return
     const currCell = gBoard[i][j]
     if (currCell.isShown) return
-    gBoards.push(copyBoard(gBoard))
-    gGames.push(copyGame(gGame))
+    gBoardsHistory.push(copyBoard(gBoard))
+    gGameDataHistory.push(copyGame(gGame))
     if (!currCell.isMarked) {
         gGame.markedCount++
         elCell.innerText = FLAG
@@ -123,6 +123,10 @@ function onMegaHintClicked() {
         renderMegaHintModeDisplay()
         return
     }
+    if (gGame.megaHintsClicksCount===1){
+        resetMegaHint()
+        clearHintedCell()
+    }
     gGame.isMegaHintModeOn = false
     renderMegaHintModeDisplay()
 }
@@ -141,7 +145,10 @@ function handleMegaHintClick(ellCell, rowIdx, colIdx) {
 }
 
 function onSafeClicked() {
-    if (!gGame.isOn || gGame.safeClicksCount === 0 || gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount) return
+    if (!gGame.isOn || gGame.safeClicksCount === 0 ||
+        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount) {
+        return
+    }
     while (true) {
         var randEmptyPos = getRandEmptyPosEx()
         if (!randEmptyPos) return
@@ -156,7 +163,7 @@ function onSafeClicked() {
 
 function onMinesExterminatorClicked() {
     if (!gGame.isOn) return
-    gBoards.push(copyBoard(gBoard))
+    gBoardsHistory.push(copyBoard(gBoard))
     for (var i = 0; i < 3; i++) {
         const randMinePos = getRandUnrevealedMinePos()
         if (!randMinePos) break
@@ -184,14 +191,28 @@ function onManualModeClicked() {
     renderManualModeDisplay()
 }
 
-function onSmileyClicked(){
+function onSmileyClicked() {
     gGame.currLevel.minesCount += gGame.minesExterminatedCount
     onInit()
 }
 
 function onUndoClicked() {
-    if (gBoards.length <= 1) return
-    gBoard = gBoards.pop()
-    gGame = gGames.pop()
+    if (gGame.isManualModeOn && gGame.manuallySetMinesPoss.length > 0 &&
+        gGame.manuallySetMinesPoss.length !== gGame.currLevel.minesCount) {
+        OnUndoClickedManualModeOn()
+    }
+    if (gBoardsHistory.length <= 1) return
+    gBoard = gBoardsHistory.pop()
+    gGame = gGameDataHistory.pop()
     renderDisplay()
+}
+
+function OnUndoClickedManualModeOn() {
+    const pos = gGame.manuallySetMinesPoss.pop()
+    const cell = gBoard[pos.i][pos.j]
+    cell.isMine = false
+    const ellCell = getElCellFromPos(pos.i, pos.j)
+    ellCell.innerText = EMPTY
+    gGame.revealedMinesCount--
+    renderMinesCount()
 }

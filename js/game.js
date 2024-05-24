@@ -10,8 +10,8 @@ const WIN_SMILEY = '😎'
 const LOSE_SMILEY = '🤯'
 const PENDING_EMOJI = '⏳'
 
-var gBoards
-var gGames
+var gBoardsHistory = []
+var gGameDataHistory = []
 
 var gBoard
 var gLevels = [
@@ -41,7 +41,8 @@ var gGame = {
     isMegaHintModeOn: false,
     megaHintsClicksCount: 2,
     megaHintMarkedPoss: [],
-    isDarkModeOn: false
+    isDarkModeOn: false,
+    manuallySetMinesPoss: []
 }
 
 function onInit() {
@@ -70,8 +71,8 @@ function buildBoard() {
 }
 
 function resetGame() {
-    gBoards = []
-    gGames = []
+    gBoardsHistory = []
+    gGameDataHistory = []
     gGame.isOn = false
     gGame.isGameOver = false
     gGame.shownCount = 0
@@ -86,6 +87,7 @@ function resetGame() {
     gGame.isPending = false
     gGame.minesExterminatedCount = 0
     gGame.megaHintsCount = 1
+    gGame.manuallySetMinesPoss = []
     resetMegaHint()
 }
 
@@ -213,6 +215,7 @@ function placeMine(ellCell, i, j) {
     ellCell.innerText = MINE
     gGame.revealedMinesCount++
     renderMinesCount()
+    gGame.manuallySetMinesPoss.push({ i, j })
     if (gGame.revealedMinesCount === gGame.currLevel.minesCount) {
         gGame.revealedMinesCount = 0
         gGame.isPending = true

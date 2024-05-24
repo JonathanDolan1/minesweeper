@@ -21,7 +21,10 @@ function renderBoard() {
                 classStr = 'marked'
                 innerText = FLAG
             }
-            strHTML += `<td id="cell-${i}-${j}" class="${classStr + darkModeClassStr}" onclick="onCellClicked(this,${i},${j})" oncontextmenu="onCellMarked(this,${i},${j});return false;">${innerText}</td>`
+            strHTML += `<td id="cell-${i}-${j}" class="${classStr + darkModeClassStr}"
+                        onclick="onCellClicked(this,${i},${j})"
+                        oncontextmenu="onCellMarked(this,${i},${j});return false;">
+                        ${innerText}</td>`
         }
         strHTML += '</tr>'
     }
@@ -44,6 +47,11 @@ function clearHintsMarks() {
     for (var i = 0; i < elHints.length; i++) {
         elHints[i].classList.remove('marked')
     }
+}
+
+function clearHintedCell() {
+    const elHintedCell = document.querySelector('td.hinted')
+    elHintedCell.classList.remove('hinted')
 }
 
 function renderLivesCount() {
