@@ -241,7 +241,7 @@ function checkGameOver() {
         loseGame()
         return
     }
-    if (gGame.markedCount + gGame.revealedMinesCount === gGame.currLevel.minesCount - gGame.minesExterminatedCount &&
+    if (!getRandUnrevealedMinePos() &&
         gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount + gGame.minesExterminatedCount) {
         winGame()
     }

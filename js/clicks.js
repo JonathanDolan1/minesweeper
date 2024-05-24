@@ -160,7 +160,7 @@ function onSafeClicked() {
 }
 
 function onMinesExterminatorClicked() {
-    if (!gGame.isOn || gGame.markedCount + gGame.revealedMinesCount === gGame.currLevel.minesCount - gGame.minesExterminatedCount) return
+    if (!gGame.isOn || !getRandUnrevealedMinePos()) return
     storeMoveInHistory()
     for (var i = 0; i < 3; i++) {
         const randMinePos = getRandUnrevealedMinePos()
