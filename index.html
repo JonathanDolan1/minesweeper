@@ -24,27 +24,27 @@
         </div>
 
         <div class="hints-and-lives-container">
-            <span class="hints-container"></span>
-            <span class="lives-container"></span>
+            <span class="hints-container">Hints:<span></span></span>
+            <span class="lives-container">Lives:<span></span></span>
         </div>
 
         <div class="mega-hint-and-safe-click-container">
             <div class="mega-hint-container">
-                <button class="mega-hint" onclick="onMegaHintClicked()">Mega hint 💡: <span></span></button>
+                <button class="mega-hint" onclick="onMegaHintClicked()">Mega Hint 💡</button>
                 <br>
                 <span class="mega-hint"><span></span> click available</span>
             </div>
 
             <div class="safe-click-container">
-                <button class="safe-click" onclick="onSafeClicked()">Safe Click ✅ </button>
+                <button class="safe-click" onclick="onSafeClicked()">Safe Click ✅</button>
                 <br>
                 <span class="safe-click"><span></span> clicks available</span>
             </div>
         </div>
         <div class="mines-exterminator-and-manual-mode-container">
-            <button class="mines-exterminator" onclick="onMinesExterminatorClicked()">Mines exterminator 🦾</button>
+            <button class="mines-exterminator" onclick="onMinesExterminatorClicked()">Mines Exterminator 🦾</button>
 
-            <button class="manual-mode" onclick="onManualModeClicked()">Manual mode ✍️: <span>off</span></button>
+            <button class="manual-mode" onclick="onManualModeClicked()">Manual mode ✍️</button>
             <br>
         </div>
         <div class="undo-timer-and-mines-count-container">
@@ -55,7 +55,7 @@
                 💣:<span></span>
             </div>
         </div>
-        <button class="smiley" onclick="onInit()"> 😀 </button>
+        <button class="smiley" onclick="onSmileyClicked()"> 😀 </button>
     </div>
 
     <div class="board-container">
@@ -84,7 +84,9 @@
     <footer>Made by Jonathan Dolan</footer>
 
     <script src="js/utils.js"></script>
-    <script src="js/minesweeper.js"></script>
+    <script src="js/renders.js"></script>
+    <script src="js/clicks.js"></script>
+    <script src="js/game.js"></script>
 </body>
 
 </html>
