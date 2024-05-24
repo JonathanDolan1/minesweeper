@@ -13,6 +13,7 @@ const MANUAL_MODE_EMOJI = '🤖'
 
 var gBoardsHistory = []
 var gGameDataHistory = []
+var gIsGameLost = false
 
 var gBoard
 var gLevels = [
@@ -71,6 +72,7 @@ function buildBoard() {
 }
 
 function resetGame() {
+    gIsGameLost = false
     gBoardsHistory = []
     gGameDataHistory = []
     gGame.isOn = false
@@ -249,6 +251,16 @@ function checkGameOver() {
 
 function loseGame() {
     renderSmiley(LOSE_SMILEY)
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            const currCell = gBoard[i][j]
+            if (currCell.isMine && !currCell.isMarked){
+                const ellCell = getElCellFromPos(i,j)
+                setTimeout(() => ellCell.innerText = MINE, (i*gBoard.length + j)*2);
+            }
+        }
+    }
+    gIsGameLost = true
     stopGame()
 }
 
@@ -259,6 +271,7 @@ function winGame() {
 }
 
 function updateBestScores() {
+    if (gIsGameLost) return
     var level
     switch (gGame.currLevel.size) {
         case 4:
