@@ -65,7 +65,7 @@ function renderLivesCount() {
 
 function renderMinesCount() {
     const elMinesCountSpan = document.querySelector('.mines-count span')
-    elMinesCountSpan.innerText = gGame.currLevel.minesCount - gGame.markedCount - gGame.revealedMinesCount
+    elMinesCountSpan.innerText = gGame.currLevel.minesCount - gGame.markedCount - gGame.revealedMinesCount - gGame.minesExterminatedCount
 }
 
 function renderMegaHintsClicksCount() {

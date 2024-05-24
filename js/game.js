@@ -241,8 +241,8 @@ function checkGameOver() {
         loseGame()
         return
     }
-    if (gGame.markedCount + gGame.revealedMinesCount === gGame.currLevel.minesCount &&
-        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount) {
+    if (gGame.markedCount + gGame.revealedMinesCount === gGame.currLevel.minesCount - gGame.minesExterminatedCount &&
+        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount + gGame.minesExterminatedCount) {
         winGame()
     }
 }
@@ -369,4 +369,9 @@ function startTimer() {
 function getElCellFromPos(i, j) {
     const elCell = document.querySelector(`#cell-${i}-${j}`)
     return elCell
+}
+
+function storeMoveInHistory() {
+    gBoardsHistory.push(copyBoard(gBoard))
+    gGameDataHistory.push(copyGame(gGame))
 }

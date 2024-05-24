@@ -27,8 +27,7 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
         return
     }
     if (!isRecoursive) {
-        gBoardsHistory.push(copyBoard(gBoard))
-        gGameDataHistory.push(copyGame(gGame))
+        storeMoveInHistory()
     }
     const currCell = gBoard[i][j]
     if (currCell.isShown) return
@@ -59,8 +58,7 @@ function onCellMarked(elCell, i, j) {
     if (!gGame.isOn) return
     const currCell = gBoard[i][j]
     if (currCell.isShown) return
-    gBoardsHistory.push(copyBoard(gBoard))
-    gGameDataHistory.push(copyGame(gGame))
+    storeMoveInHistory()
     if (!currCell.isMarked) {
         gGame.markedCount++
         elCell.innerText = FLAG
@@ -146,7 +144,7 @@ function handleMegaHintClick(ellCell, rowIdx, colIdx) {
 
 function onSafeClicked() {
     if (!gGame.isOn || gGame.safeClicksCount === 0 ||
-        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount) {
+        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount + gGame.minesExterminatedCount) {
         return
     }
     while (true) {
@@ -163,13 +161,12 @@ function onSafeClicked() {
 
 function onMinesExterminatorClicked() {
     if (!gGame.isOn) return
-    gBoardsHistory.push(copyBoard(gBoard))
+    storeMoveInHistory()
     for (var i = 0; i < 3; i++) {
         const randMinePos = getRandUnrevealedMinePos()
         if (!randMinePos) break
         const currCell = gBoard[randMinePos.i][randMinePos.j]
         currCell.isMine = false
-        gGame.currLevel.minesCount--
         gGame.minesExterminatedCount++
         if (currCell.isMarked) {
             currCell.isMarked = false
@@ -189,11 +186,6 @@ function onManualModeClicked() {
     onInit()
     gGame.isManualModeOn = true
     renderManualModeDisplay()
-}
-
-function onSmileyClicked() {
-    gGame.currLevel.minesCount += gGame.minesExterminatedCount
-    onInit()
 }
 
 function onUndoClicked() {
