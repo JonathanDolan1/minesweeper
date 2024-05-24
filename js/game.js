@@ -211,6 +211,7 @@ function showMegaHint() {
 }
 
 function placeMine(ellCell, i, j) {
+    if (gBoard[i][j].isMine) return
     gBoard[i][j].isMine = true
     ellCell.innerText = MINE
     gGame.revealedMinesCount++
