@@ -105,9 +105,9 @@ function renderDisplay() {
     renderBestScores()
 }
 
-function setMinesAtRandPossEx(rowIdx, colIdx) {
+function setMinesAtRandPossEx(pos) {
     for (var i = 0; i < gGame.currLevel.minesCount; i++) {
-        const randPos = getRandEmptyPosEx(rowIdx, colIdx)
+        const randPos = getRandEmptyPosEx(pos)
         gBoard[randPos.i][randPos.j].isMine = true
     }
 }
@@ -116,18 +116,18 @@ function setMineNegsCount() {
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {
             const currCell = gBoard[i][j]
-            currCell.mineNegsCount = countMineNegs(i, j)
+            currCell.mineNegsCount = countMineNegs({ i, j })
         }
     }
 }
 
-function countMineNegs(rowIdx, colIdx) {
+function countMineNegs(pos) {
     var mineNegsCount = 0
-    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+    for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i > gBoard.length - 1) continue
-        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+        for (var j = pos.j - 1; j <= pos.j + 1; j++) {
             if (j < 0 || j > gBoard[i].length - 1) continue
-            if (i === rowIdx && j === colIdx) continue
+            if (i === pos.i && j === pos.j) continue
             const currCell = gBoard[i][j]
             if (currCell.isMine) mineNegsCount++
         }
@@ -135,14 +135,14 @@ function countMineNegs(rowIdx, colIdx) {
     return mineNegsCount
 }
 
-function expandShown(rowIdx, colIdx) {
-    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+function expandShown(pos) {
+    for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i > gBoard.length - 1) continue
-        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+        for (var j = pos.j - 1; j <= pos.j + 1; j++) {
             if (j < 0 || j > gBoard[i].length - 1) continue
-            if (i === rowIdx && j === colIdx) continue
+            if (i === pos.i && j === pos.j) continue
             const currCell = gBoard[i][j]
-            if (currCell.isMine || currCell.isShown) continue
+            if (currCell.isMine || currCell.isShown || currCell.isMarked) continue
             const elCell = getElCellFromPos(i, j)
             if (currCell.mineNegsCount > 0) {
                 showCell(currCell, elCell)
@@ -244,9 +244,13 @@ function checkGameOver() {
         return
     }
     if (!getRandUnrevealedMinePos() &&
-        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount + gGame.minesExterminatedCount) {
+        areAllNonMineCellsShown()) {
         winGame()
     }
+}
+
+function areAllNonMineCellsShown() {
+    return (gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount + gGame.minesExterminatedCount)
 }
 
 function loseGame() {
@@ -254,9 +258,9 @@ function loseGame() {
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {
             const currCell = gBoard[i][j]
-            if (currCell.isMine && !currCell.isMarked){
-                const ellCell = getElCellFromPos(i,j)
-                setTimeout(() => ellCell.innerText = MINE, (i*gBoard.length + j)*2);
+            if (currCell.isMine && !currCell.isMarked) {
+                const ellCell = getElCellFromPos(i, j)
+                setTimeout(() => ellCell.innerText = MINE, (i * gBoard.length + j) * 2);
             }
         }
     }
@@ -325,11 +329,11 @@ function copyBoard(board) {
     return boardCopy
 }
 
-function getRandEmptyPosEx(rowIdx = null, colIdx = null) {
+function getRandEmptyPosEx(pos = { i: null, j: null }) {
     const emptyPoss = []
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {
-            if (i === rowIdx && j === colIdx) continue
+            if (i === pos.i && j === pos.j) continue
             const currCell = gBoard[i][j]
             if (!currCell.isMine) emptyPoss.push({ i, j })
         }
@@ -357,11 +361,6 @@ function resetMegaHint() {
     gGame.isMegaHintModeOn = false
     gGame.megaHintsClicksCount = 2
     gGame.megaHintMarkedPoss = []
-}
-
-function loseLife() {
-    gGame.livesCount--
-    renderLivesCount()
 }
 
 function getTimerStrFromTime(time) {

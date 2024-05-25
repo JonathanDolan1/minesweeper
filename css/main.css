@@ -293,7 +293,7 @@ td.safe.dark-mode {
 }
 
 .best-scores td {
-    width: 70px;
+    width: 67px;
     border: 2.5px solid rgba(0, 0, 0, 0.412);
 }
 
@@ -310,7 +310,7 @@ footer {
     color: #202f5a;
     background-color: beige;
     font-style: italic;
-    position: absolute;
+    position: fixed;
     margin-left: auto;
     margin-right: auto;
     left: 0;

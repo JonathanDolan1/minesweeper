@@ -3,7 +3,7 @@
 function onCellClicked(elCell, i, j, isRecoursive = false) {
     if (gGame.isPending || gGame.isGameOver) return
     if (gGame.isHintMarked) {
-        handleHint(i, j)
+        handleHint({ i, j })
         return
     }
     if (!gGame.isOn) {
@@ -12,7 +12,7 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
             return
         }
         gGame.isOn = true
-        setMinesAtRandPossEx(i, j)
+        setMinesAtRandPossEx({ i, j })
     }
     if (gGame.isManualModeOn) {
         gGame.isManualModeOn = false
@@ -23,7 +23,7 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
         startTimer()
     }
     if (gGame.isMegaHintModeOn) {
-        handleMegaHintClick(elCell, i, j)
+        handleMegaHintClick(elCell, { i, j })
         return
     }
     if (!isRecoursive) {
@@ -37,29 +37,41 @@ function onCellClicked(elCell, i, j, isRecoursive = false) {
     }
     showCell(currCell, elCell)
     if (!currCell.isMine) {
-        if (currCell.mineNegsCount > 0) {
-            elCell.innerText = currCell.mineNegsCount
-        } else {
-            elCell.innerText = EMPTY
-            expandShown(i, j)
-        }
+        onSafeCellClicked(currCell, { i, j }, elCell)
     } else {
-        gGame.shownCount--
-        gGame.revealedMinesCount++
-        elCell.innerText = MINE
-        elCell.classList.add('mine')
-        renderMinesCount()
-        loseLife()
+        onMineClicked(elCell)
     }
     checkGameOver()
 }
+
+function onSafeCellClicked(cell, pos, elCell) {
+    if (cell.mineNegsCount > 0) {
+        elCell.innerText = cell.mineNegsCount
+    } else {
+        elCell.innerText = EMPTY
+        expandShown(pos)
+    }
+}
+
+function onMineClicked(elCell) {
+    gGame.shownCount--
+    gGame.revealedMinesCount++
+    elCell.innerText = MINE
+    elCell.classList.add('mine')
+    renderMinesCount()
+    gGame.livesCount--
+    renderLivesCount()
+}
+
 
 function onCellMarked(elCell, i, j) {
     if (!gGame.isOn) return
     const currCell = gBoard[i][j]
     if (currCell.isShown) return
     storeMoveInHistory()
-    if (!currCell.isMarked) {
+    currCell.isMarked = !currCell.isMarked
+    elCell.classList.toggle('marked')
+    if (currCell.isMarked) {
         gGame.markedCount++
         elCell.innerText = FLAG
         checkGameOver()
@@ -67,8 +79,6 @@ function onCellMarked(elCell, i, j) {
         gGame.markedCount--
         elCell.innerText = EMPTY
     }
-    currCell.isMarked = !currCell.isMarked
-    elCell.classList.toggle('marked')
     renderMinesCount()
 }
 
@@ -83,8 +93,8 @@ function onDarkModeClicked() {
     elDarkModeButton.innerText = gGame.isDarkModeOn ? 'Light mode 🌞' : 'Dark mode 🌚'
 }
 
-function onLevelClicked(lvlIdx) {
-    gGame.currLevel = gLevels[lvlIdx]
+function onLevelClicked(idx) {
+    gGame.currLevel = gLevels[idx]
     onInit()
 }
 
@@ -100,10 +110,10 @@ function onHintClicked(elHint) {
     }
 }
 
-function handleHint(rowIdx, colIdx) {
-    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+function handleHint(pos) {
+    for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i > gBoard.length - 1) continue
-        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+        for (var j = pos.j - 1; j <= pos.j + 1; j++) {
             if (j < 0 || j > gBoard[i].length - 1) continue
             const currCell = gBoard[i][j]
             hintCell(currCell, i, j, 1000)
@@ -129,8 +139,8 @@ function onMegaHintClicked() {
     renderMegaHintModeDisplay()
 }
 
-function handleMegaHintClick(ellCell, rowIdx, colIdx) {
-    gGame.megaHintMarkedPoss.push({ i: rowIdx, j: colIdx })
+function handleMegaHintClick(ellCell, pos) {
+    gGame.megaHintMarkedPoss.push(pos)
     gGame.megaHintsClicksCount--
     ellCell.classList.add('hinted')
     if (gGame.megaHintsClicksCount > 0) return
@@ -144,7 +154,7 @@ function handleMegaHintClick(ellCell, rowIdx, colIdx) {
 
 function onSafeClicked() {
     if (!gGame.isOn || gGame.safeClicksCount === 0 ||
-        gGame.shownCount === gGame.currLevel.size ** 2 - gGame.currLevel.minesCount + gGame.minesExterminatedCount) {
+        areAllNonMineCellsShown()) {
         return
     }
     while (true) {
