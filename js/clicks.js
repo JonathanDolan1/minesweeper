@@ -63,7 +63,6 @@ function onMineClicked(elCell) {
     renderLivesCount()
 }
 
-
 function onCellMarked(elCell, i, j) {
     if (!gGame.isOn) return
     const currCell = gBoard[i][j]

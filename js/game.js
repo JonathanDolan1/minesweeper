@@ -181,24 +181,10 @@ function hintCell(cell, i, j, revealTime) {
 function showMegaHint() {
     const pos1 = gGame.megaHintMarkedPoss[0]
     const pos2 = gGame.megaHintMarkedPoss[1]
-    var biggerRowIdx
-    var smallerRowIdx
-    var biggerColIdx
-    var smallerColIdx
-    if (pos1.i > pos2.i) {
-        biggerRowIdx = pos1.i
-        smallerRowIdx = pos2.i
-    } else {
-        biggerRowIdx = pos2.i
-        smallerRowIdx = pos1.i
-    }
-    if (pos1.j > pos2.j) {
-        biggerColIdx = pos1.j
-        smallerColIdx = pos2.j
-    } else {
-        biggerColIdx = pos2.j
-        smallerColIdx = pos1.j
-    }
+    var biggerRowIdx = Math.max(pos1.i,pos2.i)
+    var smallerRowIdx = Math.min(pos1.i,pos2.i)
+    var biggerColIdx = Math.max(pos1.j,pos2.j)
+    var smallerColIdx = Math.min(pos1.j,pos2.j)
     for (var i = smallerRowIdx; i <= biggerRowIdx; i++) {
         for (var j = smallerColIdx; j <= biggerColIdx; j++) {
             const currCell = gBoard[i][j]
